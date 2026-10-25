@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>习惯打卡 · Habit Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <h1>习惯打卡</h1>
+      <p id="todayLabel">—</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="btnImport" type="button">导入</button>
+      <button class="btn" id="btnExport" type="button">导出</button>
+      <button class="btn primary" id="btnAdd" type="button">＋ 新建习惯</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="today-bar">
+      <div class="today-text">
+        <span>今日进度</span>
+        <b id="todayProgress">0/0</b>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="todayProgressBar"></div></div>
+    </section>
+
+    <section class="cal-toolbar">
+      <h2>月历热力图</h2>
+      <div class="month-nav">
+        <button class="btn small" id="prevMonth" type="button" title="上一个月">‹</button>
+        <span id="monthLabel">—</span>
+        <button class="btn small" id="nextMonth" type="button" title="下一个月">›</button>
+        <button class="btn small" id="nowMonth" type="button" title="回到本月">今</button>
+      </div>
+    </section>
+
+    <section id="habitGrid" class="habit-grid" aria-live="polite"></section>
+
+    <div id="emptyState" class="empty-state" hidden>
+      <p>这里还没有习惯。</p>
+      <p class="muted">点击右上角「＋ 新建习惯」创建一个，或先恢复示例看看效果。</p>
+      <button class="btn primary" id="btnRestoreDemo" type="button">恢复 3 个示例习惯</button>
+    </div>
+  </main>
+
+  <!-- 新建 / 编辑习惯 -->
+  <div class="modal" id="habitModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="habitModalTitle">新建习惯</h3>
+        <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+      </div>
+      <form id="habitForm">
+        <label class="field">
+          <span>习惯名称</span>
+          <input id="habitNameInput" type="text" maxlength="30" placeholder="例如：每天喝够 8 杯水" required />
+        </label>
+        <div class="field">
+          <span>颜色标记</span>
+          <div id="colorSwatches" class="swatches"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" type="button" data-close>取消</button>
+          <button class="btn primary" type="submit">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 导出 -->
+  <div class="modal" id="exportModal">
+    <div class="modal-card wide">
+      <div class="modal-head">
+        <h3>导出数据</h3>
+        <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+      </div>
+      <p class="muted">下面是当前全部数据（JSON），可复制保存或下载为文件。</p>
+      <textarea id="exportTextarea" class="json-area" readonly spellcheck="false"></textarea>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="btnCopyExport">复制文本</button>
+        <button class="btn" type="button" id="btnDownloadExport">下载 .json</button>
+        <button class="btn primary" type="button" data-close>完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导入 -->
+  <div class="modal" id="importModal">
+    <div class="modal-card wide">
+      <div class="modal-head">
+        <h3>导入数据</h3>
+        <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+      </div>
+      <p class="muted">选择备份文件，或直接粘贴导出的 JSON。导入会<b>覆盖</b>当前全部数据。</p>
+      <input id="importFile" type="file" accept="application/json,.json" />
+      <textarea id="importTextarea" class="json-area" placeholder='{"habits": [...], "checkins": {...}}' spellcheck="false"></textarea>
+      <p id="importMsg" class="import-msg"></p>
+      <div class="modal-actions">
+        <button class="btn" type="button" data-close>取消</button>
+        <button class="btn primary" type="button" id="btnDoImport">导入并覆盖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 删除确认 -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>请确认</h3>
+        <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+      </div>
+      <p id="confirmText">确定删除？</p>
+      <div class="modal-actions">
+        <button class="btn" type="button" data-close>取消</button>
+        <button class="btn danger" type="button" id="confirmOk">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <footer class="app-footer">数据仅保存在本机浏览器的 localStorage 中 · 清除浏览器数据会一并清除打卡记录，请记得定期导出备份</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
